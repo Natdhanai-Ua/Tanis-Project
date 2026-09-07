@@ -29,17 +29,9 @@ export function SiteHeader({ theme, onToggleTheme }: Props) {
     <header className={`header${scrolled ? ' is-scrolled' : ''}`}>
       <div className="header__inner wrap">
         <a className="brand" href="#home" onClick={() => setOpen(false)}>
-          <span className="brand__mark" aria-hidden="true">
-            <svg viewBox="0 0 32 32">
-              <circle cx="16" cy="16" r="12.5" />
-              <path d="M16 3.5v25M3.5 16h25" />
-              <ellipse cx="16" cy="16" rx="6" ry="12.5" />
-              <circle cx="16" cy="16" r="2.4" className="brand__dot" />
-            </svg>
-          </span>
           <span className="brand__text">
-            <strong>TANIS ATLAS</strong>
-            <small>แผนที่ภูมิศาสตร์ดิจิทัล</small>
+            <strong>แผนที่ภูมิศาสตร์เจ็ดสถานที่ทั่วโลก</strong>
+            <small className="mono">TANIS ATLAS</small>
           </span>
         </a>
 
@@ -65,20 +57,9 @@ export function SiteHeader({ theme, onToggleTheme }: Props) {
             type="button"
             className="theme-toggle"
             onClick={onToggleTheme}
-            aria-label={theme === 'dark' ? 'เปลี่ยนเป็นโหมดสว่าง' : 'เปลี่ยนเป็นโหมดมืด'}
-            title={theme === 'dark' ? 'โหมดสว่าง' : 'โหมดมืด'}
+            aria-label={theme === 'dark' ? 'เปลี่ยนเป็นพื้นสว่าง' : 'เปลี่ยนเป็นพื้นมืด'}
           >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              {theme === 'dark' ? (
-                <>
-                  <circle cx="12" cy="12" r="4.2" />
-                  <path d="M12 2.6v2.6M12 18.8v2.6M2.6 12h2.6M18.8 12h2.6M5.4 5.4l1.8 1.8M16.8 16.8l1.8 1.8M18.6 5.4l-1.8 1.8M7.2 16.8l-1.8 1.8" />
-                </>
-              ) : (
-                <path d="M20.5 14.6A8.6 8.6 0 1 1 9.4 3.5a7 7 0 0 0 11.1 11.1Z" />
-              )}
-            </svg>
-            <span className="visually-hidden">สลับโหมดสีของเว็บไซต์</span>
+            {theme === 'dark' ? 'พื้นสว่าง' : 'พื้นมืด'}
           </button>
 
           <button

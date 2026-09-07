@@ -18,8 +18,8 @@ const UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36';
 
 const FAMILIES = [
-  'IBM+Plex+Sans+Thai:wght@400;500;600;700',
-  'Sarabun:wght@300;400;500;600',
+  'Noto+Serif+Thai:wght@500;600;700',
+  'Sarabun:wght@300;400;500;600;700',
   'IBM+Plex+Mono:wght@400;500',
 ];
 
@@ -56,7 +56,7 @@ const header = `/* ════════════════════�
    ฟอนต์ที่เก็บไว้ในโครงการ (self-hosted) — สร้างอัตโนมัติ
    สร้างใหม่ได้ด้วยคำสั่ง:  node scripts/fetch-fonts.mjs
    ห้ามแก้ไขไฟล์นี้ด้วยมือ
-   ที่มา: Google Fonts — IBM Plex Sans Thai, Sarabun, IBM Plex Mono
+   ที่มา: Google Fonts — Noto Serif Thai, Sarabun, IBM Plex Mono
    สัญญาอนุญาต: SIL Open Font License 1.1
    ═══════════════════════════════════════════════════════════════ */
 

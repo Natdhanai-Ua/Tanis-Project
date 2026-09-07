@@ -10,17 +10,13 @@ import { TeamSection } from './components/TeamSection';
 import { SiteFooter } from './components/SiteFooter';
 import { LocationDetail } from './components/LocationDetail';
 import { locations, LOCATION_COUNT } from './data/locations';
-import { toThaiDigits } from './lib/format';
 import { useTheme } from './hooks/useTheme';
-import { useReveal } from './hooks/useReveal';
 
 export default function App() {
   const { theme, toggle } = useTheme();
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const [hoverId, setHoverId] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
-
-  useReveal([openId]);
 
   const openIndex = useMemo(
     () => (openId ? locations.findIndex((l) => l.id === openId) : -1),
@@ -61,19 +57,18 @@ export default function App() {
       <SiteHeader theme={theme} onToggleTheme={toggle} />
 
       <main id="main">
-        <Hero />
+        <Hero onOpen={openFromAnywhere} />
 
         {/* ── แผนที่โลก ─────────────────────────────────────── */}
         <section id="map" className="section section--map">
           <div className="wrap">
             <SectionHead
-              index={1}
-              eyebrow="แผนที่โลกแบบอินเทอร์แอกทีฟ"
-              title="เลือกหมุดเพื่อสำรวจแต่ละสถานที่"
-              description={`หมุดสีทองทั้ง ${toThaiDigits(LOCATION_COUNT)} จุดบนแผนที่แสดงตำแหน่งจริงตามพิกัดละติจูดและลองจิจูด คลิกที่หมุดหรือเลือกจากรายการด้านข้างเพื่อดูข้อมูลโดยละเอียด`}
+              label="แผ่นที่ 1"
+              title="แผนที่แสดงตำแหน่งสถานที่ศึกษา"
+              description={`หมายเลข 1 ถึง ${LOCATION_COUNT} บนแผ่นแผนที่วางตามพิกัดละติจูดและลองจิจูดจริงของแต่ละแห่ง เลือกหมายเลขบนแผนที่หรือจากดัชนีด้านข้างเพื่อขยายและเปิดข้อมูลประกอบ`}
             />
 
-            <div className="map-layout reveal">
+            <div className="map-layout">
               <LocationRail
                 locations={locations}
                 activeId={focusedId}
@@ -95,16 +90,15 @@ export default function App() {
         </section>
 
         {/* ── การ์ดสถานที่ทั้งหมด ───────────────────────────── */}
-        <section id="locations" className="section section--locations">
+        <section id="locations" className="section section--tint">
           <div className="wrap">
             <SectionHead
-              index={2}
-              eyebrow="รายละเอียดสถานที่"
-              title={`${toThaiDigits(LOCATION_COUNT)} สถานที่จากทั่วโลก`}
-              description="แต่ละสถานที่ประกอบด้วยภาพประกอบ คำอธิบายทางภูมิศาสตร์ การประยุกต์ใช้การสำรวจระยะไกล (RS) และระบบดาวเทียมนำทางโลก (GNSS) พร้อมพิกัดอ้างอิง"
+              label="ส่วนที่ 2"
+              title="รายละเอียดสถานที่ศึกษา"
+              description="แต่ละรายการประกอบด้วยภาพประกอบ คำอธิบายลักษณะทางภูมิศาสตร์ การประยุกต์ใช้การสำรวจระยะไกล และระบบดาวเทียมนำทางโลก พร้อมพิกัดอ้างอิง"
             />
 
-            <div className="cards">
+            <div className="entries">
               {locations.map((loc, i) => (
                 <LocationCard key={loc.id} location={loc} index={i + 1} onOpen={openFromAnywhere} />
               ))}

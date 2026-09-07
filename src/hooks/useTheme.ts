@@ -4,7 +4,7 @@ export type Theme = 'dark' | 'light';
 const STORAGE_KEY = 'tanis-atlas-theme';
 
 function readInitial(): Theme {
-  if (typeof window === 'undefined') return 'dark';
+  if (typeof window === 'undefined') return 'light';
 
   // 1. ค่าที่ผู้ใช้เคยเลือกไว้บนเครื่องนี้
   try {
@@ -18,8 +18,8 @@ function readInitial(): Theme {
   const stamped = document.documentElement.getAttribute('data-theme');
   if (stamped === 'dark' || stamped === 'light') return stamped;
 
-  // 3. ค่าเริ่มต้นของเว็บไซต์คือโหมดมืด ตามแนวคิดการออกแบบ
-  return 'dark';
+  // 3. ไม่เช่นนั้นให้ตามการตั้งค่าของเครื่องผู้อ่าน (ค่าปกติคือพื้นกระดาษ)
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
 /** จัดการโหมดสว่าง/มืด และจดจำค่าที่ผู้ใช้เลือกไว้ */

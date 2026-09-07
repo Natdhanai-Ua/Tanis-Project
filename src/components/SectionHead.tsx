@@ -1,23 +1,17 @@
-import { pad2 } from '../lib/format';
-
 interface Props {
-  index: number;
-  eyebrow: string;
+  label: string;
   title: string;
   description?: string;
-  align?: 'start' | 'center';
 }
 
-/** หัวข้อประจำแต่ละส่วนของหน้า ให้รูปแบบสม่ำเสมอทั้งเว็บไซต์ */
-export function SectionHead({ index, eyebrow, title, description, align = 'start' }: Props) {
+/** หัวข้อประจำส่วน — เส้นคาดด้านบนและป้ายกำกับตัวเล็ก แบบหัวบทของหนังสืออ้างอิง */
+export function SectionHead({ label, title, description }: Props) {
   return (
-    <header className={`sec-head sec-head--${align} reveal`}>
-      <p className="eyebrow">
-        <span className="mono">{pad2(index)}</span>
-        {eyebrow}
-      </p>
-      <h2 className="sec-head__title">{title}</h2>
-      {description && <p className="sec-head__desc">{description}</p>}
+    <header className="sec">
+      <hr className="rule" />
+      <p className="sec__label label label--wide">{label}</p>
+      <h2 className="sec__title">{title}</h2>
+      {description && <p className="sec__desc">{description}</p>}
     </header>
   );
 }

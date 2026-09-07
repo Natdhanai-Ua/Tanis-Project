@@ -7,17 +7,28 @@ import type { GeoLocation } from '../data/types';
 import { formatCoords, pad2 } from '../lib/format';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 
-/* แปลง TopoJSON เป็น GeoJSON เพียงครั้งเดียวตอนโหลดโมดูล */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const world = worldTopo as any;
 const countries = feature(world, world.objects.countries) as unknown as FeatureCollection<Geometry>;
 const graticule = geoGraticule10();
 
 const VIEW_W = 1000;
-const VIEW_H = 520;
+const VIEW_H = 505;
 const MIN_K = 1;
 const MAX_K = 9;
 const FOCUS_K = 3.6;
+
+/** เส้นขนานสำคัญที่สอนในวิชาภูมิศาสตร์ — วาดและกำกับชื่อไว้บนแผนที่ */
+const PARALLELS = [
+  { lat: 23.4366, name: 'เส้นทรอปิกออฟแคนเซอร์', short: '23°26′ N', dashed: true },
+  { lat: 0, name: 'เส้นศูนย์สูตร', short: '0°', dashed: false },
+  { lat: -23.4366, name: 'เส้นทรอปิกออฟแคปริคอร์น', short: '23°26′ S', dashed: true },
+];
+
+const parallelLine = (lat: number) => ({
+  type: 'LineString' as const,
+  coordinates: Array.from({ length: 181 }, (_, i) => [-180 + i * 2, lat] as [number, number]),
+});
 
 interface Transform {
   k: number;
@@ -26,7 +37,6 @@ interface Transform {
 }
 
 const IDENTITY: Transform = { k: 1, x: 0, y: 0 };
-
 const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
 
 interface Props {
@@ -38,11 +48,9 @@ interface Props {
 }
 
 export function WorldMap({ locations, activeId, hoverId, onHover, onSelect }: Props) {
-  /* บนจอเล็ก หมุดต้องใหญ่ขึ้นเพื่อให้แตะได้สะดวก */
   const compact = useMediaQuery('(max-width: 640px)');
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [transform, setTransformState] = useState<Transform>(IDENTITY);
-  /* เก็บค่าล่าสุดไว้ใน ref ด้วย เพื่อให้อนิเมชันอ่านค่าปัจจุบันได้ทันที */
   const tRef = useRef<Transform>(IDENTITY);
   const rafRef = useRef<number | null>(null);
   const dragRef = useRef<{ id: number; x: number; y: number; moved: boolean } | null>(null);
@@ -53,12 +61,11 @@ export function WorldMap({ locations, activeId, hoverId, onHover, onSelect }: Pr
     setTransformState(value);
   }, []);
 
-  /* เส้นทางแผนที่คำนวณครั้งเดียว — โปรเจกชันคงที่ ส่วนการซูมใช้ transform ของ SVG */
-  const { landPaths, graticulePath, spherePath, project } = useMemo(() => {
+  const { landPaths, graticulePath, spherePath, parallelPaths, project } = useMemo(() => {
     const projection = geoNaturalEarth1().fitExtent(
       [
-        [8, 8],
-        [VIEW_W - 8, VIEW_H - 8],
+        [10, 10],
+        [VIEW_W - 10, VIEW_H - 10],
       ],
       { type: 'Sphere' },
     );
@@ -67,6 +74,11 @@ export function WorldMap({ locations, activeId, hoverId, onHover, onSelect }: Pr
       landPaths: countries.features.map((f, i) => ({ id: i, d: path(f) ?? '' })),
       graticulePath: path(graticule) ?? '',
       spherePath: path({ type: 'Sphere' }) ?? '',
+      parallelPaths: PARALLELS.map((p) => ({
+        ...p,
+        d: path(parallelLine(p.lat)) ?? '',
+        labelAt: projection([-166, p.lat]) ?? [0, 0],
+      })),
       project: (lng: number, lat: number) => projection([lng, lat]) ?? [0, 0],
     };
   }, []);
@@ -80,12 +92,10 @@ export function WorldMap({ locations, activeId, hoverId, onHover, onSelect }: Pr
     [locations, project],
   );
 
-  /* ── การเคลื่อนกล้องแบบนุ่มนวล ─────────────────────────────── */
   const animateTo = useCallback(
-    (target: Transform, duration = 700) => {
+    (target: Transform, duration = 620) => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (reduce || duration === 0) {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || duration === 0) {
         setTransform(target);
         return;
       }
@@ -110,16 +120,13 @@ export function WorldMap({ locations, activeId, hoverId, onHover, onSelect }: Pr
 
   const clamp = useCallback((t: Transform): Transform => {
     const k = Math.min(MAX_K, Math.max(MIN_K, t.k));
-    const maxX = (k - 1) * VIEW_W;
-    const maxY = (k - 1) * VIEW_H;
     return {
       k,
-      x: Math.min(0, Math.max(-maxX, t.x)),
-      y: Math.min(0, Math.max(-maxY, t.y)),
+      x: Math.min(0, Math.max(-(k - 1) * VIEW_W, t.x)),
+      y: Math.min(0, Math.max(-(k - 1) * VIEW_H, t.y)),
     };
   }, []);
 
-  /** เลื่อนแผนที่ไปยังสถานที่ที่เลือก */
   const flyTo = useCallback(
     (lng: number, lat: number) => {
       const [px, py] = project(lng, lat);
@@ -139,18 +146,15 @@ export function WorldMap({ locations, activeId, hoverId, onHover, onSelect }: Pr
     (factor: number) => {
       setTransform((t) => {
         const k = Math.min(MAX_K, Math.max(MIN_K, t.k * factor));
-        const cx = VIEW_W / 2;
-        const cy = VIEW_H / 2;
         const ratio = k / t.k;
-        return clamp({ k, x: cx - (cx - t.x) * ratio, y: cy - (cy - t.y) * ratio });
+        return clamp({ k, x: VIEW_W / 2 - (VIEW_W / 2 - t.x) * ratio, y: VIEW_H / 2 - (VIEW_H / 2 - t.y) * ratio });
       });
     },
     [clamp, setTransform],
   );
 
-  const reset = useCallback(() => animateTo(IDENTITY, 520), [animateTo]);
+  const reset = useCallback(() => animateTo(IDENTITY, 480), [animateTo]);
 
-  /* ── ล้อเมาส์ ─────────────────────────────────────────────── */
   useEffect(() => {
     const svg = svgRef.current;
     if (!svg) return;
@@ -169,7 +173,6 @@ export function WorldMap({ locations, activeId, hoverId, onHover, onSelect }: Pr
     return () => svg.removeEventListener('wheel', onWheel);
   }, [clamp, setTransform]);
 
-  /* ── ลากเพื่อเลื่อน ───────────────────────────────────────── */
   const onPointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
     if (e.button !== 0 && e.pointerType === 'mouse') return;
     dragRef.current = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
@@ -196,131 +199,161 @@ export function WorldMap({ locations, activeId, hoverId, onHover, onSelect }: Pr
     }
   };
 
-  const zoomPct = Math.round(transform.k * 100);
+  const pinScale = (compact ? 1.75 : 1) / transform.k;
+  const hovered = hoverId ? locations.find((l) => l.id === hoverId) ?? null : null;
 
   return (
-    <div className="map">
-      <svg
-        ref={svgRef}
-        className="map__svg"
-        viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
-        role="application"
-        aria-label="แผนที่โลกแบบอินเทอร์แอกทีฟ แสดงตำแหน่งสถานที่ทั้ง 7 แห่ง"
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
-      >
-        <defs>
-          <radialGradient id="oceanGlow" cx="50%" cy="42%" r="72%">
-            <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.09" />
-            <stop offset="62%" stopColor="var(--accent)" stopOpacity="0.015" />
-            <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
-          </radialGradient>
-          <filter id="pinShadow" x="-60%" y="-60%" width="220%" height="220%">
-            <feDropShadow dx="0" dy="1.4" stdDeviation="1.6" floodColor="#000" floodOpacity="0.5" />
-          </filter>
-        </defs>
+    <figure className="plate">
+      <div className="plate__frame">
+        <svg
+          ref={svgRef}
+          className="plate__svg"
+          viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
+          role="application"
+          aria-label="แผนที่โลกแบบอินเทอร์แอกทีฟ แสดงตำแหน่งสถานที่ทั้งเจ็ดแห่ง"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+        >
+          <g transform={`translate(${transform.x} ${transform.y}) scale(${transform.k})`}>
+            <path d={spherePath} className="mp-water" />
+            <path d={graticulePath} className="mp-graticule" vectorEffect="non-scaling-stroke" />
 
-        <g transform={`translate(${transform.x} ${transform.y}) scale(${transform.k})`}>
-          <path d={spherePath} className="map__ocean" />
-          <path d={spherePath} fill="url(#oceanGlow)" />
-          <path d={graticulePath} className="map__graticule" vectorEffect="non-scaling-stroke" />
+            <g className="mp-land">
+              {landPaths.map((p) => (
+                <path key={p.id} d={p.d} vectorEffect="non-scaling-stroke" />
+              ))}
+            </g>
 
-          <g className="map__land">
-            {landPaths.map((p) => (
-              <path key={p.id} d={p.d} vectorEffect="non-scaling-stroke" />
-            ))}
-          </g>
-
-          <path d={spherePath} className="map__outline" vectorEffect="non-scaling-stroke" />
-
-          {/* เส้นเชื่อมจากหมุดที่ชี้ ไปยังป้ายชื่อ */}
-          <g className="map__pins">
-            {points.map(({ loc, x, y, index }) => {
-              const isActive = activeId === loc.id;
-              const isHover = hoverId === loc.id;
-              const s = (compact ? 1.85 : 1) / transform.k;
-              return (
-                <g
-                  key={loc.id}
-                  transform={`translate(${x} ${y}) scale(${s})`}
-                  className={`pin${isActive ? ' is-active' : ''}${isHover ? ' is-hover' : ''}`}
-                  onPointerEnter={() => onHover(loc.id)}
-                  onPointerLeave={() => onHover(null)}
-                  onClick={() => {
-                    if (!dragRef.current?.moved) onSelect(loc.id);
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`${loc.name} ประเทศ${loc.country}`}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      onSelect(loc.id);
-                    }
-                  }}
-                >
-                  <circle className="pin__halo" r="17" />
-                  <circle className="pin__ring" r="10.5" />
-                  <circle className="pin__dot" r="5" filter="url(#pinShadow)" />
-                  <text className="pin__num" y="1.6" textAnchor="middle">
-                    {index}
+            {/* เส้นขนานสำคัญ พร้อมชื่อกำกับตามธรรมเนียมแผนที่ */}
+            <g className="mp-parallels">
+              {parallelPaths.map((p) => (
+                <g key={p.name}>
+                  <path
+                    d={p.d}
+                    className={p.dashed ? 'mp-parallel mp-parallel--dashed' : 'mp-parallel'}
+                    vectorEffect="non-scaling-stroke"
+                  />
+                  <text
+                    x={p.labelAt[0]}
+                    y={p.labelAt[1] - 3}
+                    className="mp-parallel-label"
+                    style={{ fontSize: `${7 / transform.k}px` }}
+                  >
+                    {p.name} {p.short}
                   </text>
-                  <g className="pin__tag" transform="translate(0 -20)">
-                    <rect x="-46" y="-15" width="92" height="19" rx="9.5" />
-                    <text y="-1.4" textAnchor="middle">
-                      {loc.name}
-                    </text>
-                  </g>
                 </g>
-              );
-            })}
-          </g>
-        </g>
-      </svg>
+              ))}
+            </g>
 
-      {/* แผงควบคุมแผนที่ */}
-      <div className="map__controls" role="group" aria-label="เครื่องมือควบคุมแผนที่">
-        <button type="button" onClick={() => zoomBy(1.35)} aria-label="ขยายแผนที่">
-          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12" /></svg>
-        </button>
-        <button type="button" onClick={() => zoomBy(1 / 1.35)} aria-label="ย่อแผนที่">
-          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12" /></svg>
-        </button>
-        <button type="button" onClick={reset} className="map__reset">
-          รีเซ็ตมุมมอง
-        </button>
-        <span className="map__zoom mono" aria-live="polite">
-          {zoomPct}%
-        </span>
+            <path d={spherePath} className="mp-limb" vectorEffect="non-scaling-stroke" />
+
+            <g className="mp-stations">
+              {points.map(({ loc, x, y, index }) => {
+                const isActive = activeId === loc.id;
+                const isHover = hoverId === loc.id;
+                return (
+                  <g
+                    key={loc.id}
+                    transform={`translate(${x} ${y}) scale(${pinScale})`}
+                    className={`station${isActive ? ' is-active' : ''}${isHover ? ' is-hover' : ''}`}
+                    onPointerEnter={() => onHover(loc.id)}
+                    onPointerLeave={() => onHover(null)}
+                    onClick={() => {
+                      if (!dragRef.current?.moved) onSelect(loc.id);
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`${loc.name} ประเทศ${loc.country}`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onSelect(loc.id);
+                      }
+                    }}
+                  >
+                    <circle className="station__hit" r="13" />
+                    <circle className="station__disc" r="7.2" />
+                    <text className="station__num" y="2.5" textAnchor="middle">
+                      {index}
+                    </text>
+                    <g className="station__label">
+                      <rect x="-44" y="-25.5" width="88" height="13" />
+                      <text y="-16" textAnchor="middle">
+                        {loc.name}
+                      </text>
+                    </g>
+                  </g>
+                );
+              })}
+            </g>
+          </g>
+        </svg>
+
+        <div className="plate__controls" role="group" aria-label="เครื่องมือควบคุมแผนที่">
+          <button type="button" onClick={() => zoomBy(1.35)} aria-label="ขยายแผนที่">
+            <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M9 3v12M3 9h12" /></svg>
+          </button>
+          <button type="button" onClick={() => zoomBy(1 / 1.35)} aria-label="ย่อแผนที่">
+            <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h12" /></svg>
+          </button>
+          <button type="button" onClick={reset} className="plate__reset">
+            คืนมาตราส่วนเดิม
+          </button>
+          <span className="plate__zoom mono" aria-live="polite">
+            ×{(transform.k).toFixed(1)}
+          </span>
+        </div>
+
+        {hovered && <StationPreview location={hovered} index={locations.indexOf(hovered) + 1} />}
       </div>
 
-      <p className="map__hint">
-        <span>ลากเพื่อเลื่อน</span>
-        <span>เลื่อนล้อเพื่อซูม</span>
-        <span>คลิกหมุดเพื่อดูรายละเอียด</span>
-      </p>
-
-      {/* การ์ดตัวอย่างเมื่อชี้ที่หมุด */}
-      {hoverId && (
-        <MapPreview location={locations.find((l) => l.id === hoverId)!} index={locations.findIndex((l) => l.id === hoverId) + 1} />
-      )}
-    </div>
+      {/* คำอธิบายสัญลักษณ์ — องค์ประกอบมาตรฐานของแผนที่ทุกฉบับ */}
+      <figcaption className="plate__caption">
+        <div className="key">
+          <span className="key__title label">คำอธิบายสัญลักษณ์</span>
+          <span className="key__item">
+            <span className="key__station" aria-hidden="true">1</span>
+            สถานที่ศึกษา ({locations.length} แห่ง)
+          </span>
+          <span className="key__item">
+            <svg viewBox="0 0 22 6" aria-hidden="true" className="key__line"><path d="M0 3h22" /></svg>
+            เส้นศูนย์สูตร
+          </span>
+          <span className="key__item">
+            <svg viewBox="0 0 22 6" aria-hidden="true" className="key__line key__line--dashed"><path d="M0 3h22" /></svg>
+            เส้นทรอปิก
+          </span>
+          <span className="key__item">
+            <span className="key__swatch key__swatch--land" aria-hidden="true" />
+            พื้นดิน
+          </span>
+          <span className="key__item">
+            <span className="key__swatch key__swatch--water" aria-hidden="true" />
+            พื้นน้ำ
+          </span>
+        </div>
+        <p className="plate__meta">
+          เส้นโครงแผนที่แบบ Natural Earth · เส้นโครงพิกัดทุก 10 องศา · ข้อมูลขอบเขต Natural Earth (สาธารณสมบัติ)
+        </p>
+        <p className="plate__usage">
+          ลากเพื่อเลื่อน · เลื่อนล้อหรือใช้ปุ่มเพื่อปรับมาตราส่วน · คลิกหมายเลขสถานที่เพื่อเปิดข้อมูล
+        </p>
+      </figcaption>
+    </figure>
   );
 }
 
-function MapPreview({ location, index }: { location: GeoLocation; index: number }) {
+function StationPreview({ location, index }: { location: GeoLocation; index: number }) {
   return (
-    <aside className="map-preview" aria-hidden="true">
+    <aside className="station-card" aria-hidden="true">
       <img src={location.image.src} alt="" loading="lazy" />
-      <div className="map-preview__body">
-        <span className="map-preview__idx mono">{pad2(index)}</span>
+      <div className="station-card__body">
+        <p className="station-card__no mono">สถานที่ {pad2(index)}</p>
         <h4>{location.name}</h4>
-        <p className="map-preview__country">
-          {location.flag} {location.country}
-        </p>
-        <p className="map-preview__coords mono">{formatCoords(location.coordinates)}</p>
+        <p className="station-card__country">{location.country} · {location.continent}</p>
+        <p className="station-card__coords mono">{formatCoords(location.coordinates)}</p>
       </div>
     </aside>
   );

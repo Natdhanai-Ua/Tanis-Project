@@ -1,76 +1,77 @@
-import { HeroGlobe } from './HeroGlobe';
-import { LOCATION_COUNT, COUNTRY_COUNT, CONTINENT_COUNT, locations } from '../data/locations';
+import { locations, LOCATION_COUNT, COUNTRY_COUNT, CONTINENT_COUNT } from '../data/locations';
 import { projectInfo } from '../data/team';
-import { toThaiDigits } from '../lib/format';
+import { formatCoords, pad2 } from '../lib/format';
 
-const stats = [
-  { value: LOCATION_COUNT, label: 'สถานที่ทั่วโลก' },
-  { value: COUNTRY_COUNT, label: 'ประเทศ' },
-  { value: CONTINENT_COUNT, label: 'ทวีป' },
-];
+interface Props {
+  onOpen: (id: string) => void;
+}
 
-export function Hero() {
+/**
+ * หน้าปกของโครงงาน — จัดวางตามแบบหน้าชื่อเรื่องและสารบัญของหนังสืออ้างอิง
+ * ด้านซ้ายเป็นชื่อเรื่องกับข้อมูลบรรณานุกรม ด้านขวาเป็นสารบัญสถานที่
+ */
+export function Hero({ onOpen }: Props) {
   return (
-    <section id="home" className="hero">
-      <div className="hero__bg" aria-hidden="true">
-        <span className="hero__grid" />
-        <span className="hero__glow hero__glow--1" />
-        <span className="hero__glow hero__glow--2" />
-      </div>
+    <section id="home" className="title-plate">
+      <div className="wrap title-plate__inner">
+        <div className="title-plate__main">
+          <p className="title-plate__kicker label label--wide">Atlas of Seven Places</p>
 
-      <div className="wrap hero__inner">
-        <div className="hero__content">
-          <p className="eyebrow">
-            {projectInfo.subject} · {projectInfo.academicYear}
-          </p>
-
-          <h1 className="hero__title">
-            สำรวจโลก
+          <h1 className="title-plate__title">
+            แผนที่ภูมิศาสตร์
             <br />
-            ผ่าน<span className="hero__title-accent">สายตาดาวเทียม</span>
+            เจ็ดสถานที่ทั่วโลก
           </h1>
 
-          <p className="hero__lead">
-            แผนที่ภูมิศาสตร์ดิจิทัลที่รวบรวม <strong>{toThaiDigits(LOCATION_COUNT)} สถานที่สำคัญ</strong> จากทั่วทุกมุมโลก
-            พร้อมคำอธิบายลักษณะทางภูมิศาสตร์ และการประยุกต์ใช้เทคโนโลยี
-            การสำรวจระยะไกล (RS) กับระบบดาวเทียมนำทางโลก (GNSS) ในการศึกษาแต่ละพื้นที่
+          <hr className="rule title-plate__rule" />
+
+          <p className="title-plate__abstract">
+            เอกสารประกอบการศึกษาภูมิศาสตร์กายภาพและภูมิศาสตร์มนุษย์
+            ผ่านกรณีศึกษา {LOCATION_COUNT} แห่งใน {CONTINENT_COUNT} ทวีป
+            แต่ละแห่งอธิบายลักษณะภูมิประเทศและภูมิอากาศ ควบคู่กับการประยุกต์ใช้
+            การสำรวจระยะไกล (Remote Sensing) และระบบดาวเทียมนำทางโลก (GNSS)
+            ในการศึกษาพื้นที่นั้น
           </p>
 
-          <div className="hero__cta">
-            <a href="#map" className="btn btn--primary">
-              <span>เริ่มสำรวจแผนที่</span>
-              <svg viewBox="0 0 20 20" aria-hidden="true">
-                <path d="M4 10h12M11 5l5 5-5 5" />
-              </svg>
-            </a>
-            <a href="#locations" className="btn btn--ghost">
-              ดูสถานที่ทั้งหมด
-            </a>
-          </div>
-
-          <dl className="hero__stats">
-            {stats.map((s) => (
-              <div key={s.label} className="hero__stat">
-                <dt className="mono">{toThaiDigits(s.value)}</dt>
-                <dd>{s.label}</dd>
-              </div>
-            ))}
-            <div className="hero__stat hero__stat--tech">
-              <dt className="mono">RS · GNSS</dt>
-              <dd>เทคโนโลยีภูมิสารสนเทศ</dd>
-            </div>
+          <dl className="colophon">
+            <div><dt>รายวิชา</dt><dd>{projectInfo.subject}</dd></div>
+            <div><dt>ระดับชั้น</dt><dd>{projectInfo.level}</dd></div>
+            <div><dt>สถานศึกษา</dt><dd>{projectInfo.school}</dd></div>
+            <div><dt>ครูผู้สอน</dt><dd>{projectInfo.teacher}</dd></div>
+            <div><dt>ปีการศึกษา</dt><dd>{projectInfo.academicYear}</dd></div>
+            <div><dt>กำหนดส่ง</dt><dd>{projectInfo.dueDate}</dd></div>
           </dl>
+
+          <p className="title-plate__tally">
+            <span>{LOCATION_COUNT} สถานที่</span>
+            <span>{COUNTRY_COUNT} ประเทศ</span>
+            <span>{CONTINENT_COUNT} ทวีป</span>
+          </p>
+
+          <div className="title-plate__actions">
+            <a href="#map" className="btn btn--solid">ไปยังแผนที่โลก</a>
+            <a href="#locations" className="btn btn--line">อ่านรายละเอียดสถานที่</a>
+          </div>
         </div>
 
-        <div className="hero__visual">
-          <HeroGlobe locations={locations} />
-        </div>
+        <nav className="contents" aria-label="สารบัญสถานที่">
+          <p className="contents__head label label--wide">สารบัญสถานที่</p>
+          <ol className="contents__list">
+            {locations.map((loc, i) => (
+              <li key={loc.id}>
+                <button type="button" className="contents__row" onClick={() => onOpen(loc.id)}>
+                  <span className="contents__no mono">{pad2(i + 1)}</span>
+                  <span className="contents__text">
+                    <span className="contents__name">{loc.name}</span>
+                    <span className="contents__sub">{loc.country} · {loc.continent}</span>
+                  </span>
+                  <span className="contents__coords mono">{formatCoords(loc.coordinates)}</span>
+                </button>
+              </li>
+            ))}
+          </ol>
+        </nav>
       </div>
-
-      <a className="hero__scroll" href="#map" aria-label="เลื่อนลงไปยังแผนที่โลก">
-        <span>เลื่อนลง</span>
-        <span className="hero__scroll-line" aria-hidden="true" />
-      </a>
     </section>
   );
 }

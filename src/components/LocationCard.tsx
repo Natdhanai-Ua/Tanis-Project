@@ -7,36 +7,42 @@ interface Props {
   onOpen: (id: string) => void;
 }
 
+/** รายการสถานที่แบบแผ่นภาพประกอบในหนังสืออ้างอิง — ภาพ คำบรรยายใต้ภาพ และข้อมูลกำกับ */
 export function LocationCard({ location, index, onOpen }: Props) {
   return (
-    <article className="card reveal">
-      <button type="button" className="card__btn" onClick={() => onOpen(location.id)}>
-        <div className="card__media">
+    <article className="entry">
+      <button type="button" className="entry__btn" onClick={() => onOpen(location.id)}>
+        <figure className="entry__figure">
           <img src={location.image.src} alt={location.image.alt} loading="lazy" />
-          <span className="card__idx mono">{pad2(index)}</span>
-          {location.isPlaceholder && <span className="chip chip--warn card__chip">ข้อมูลตัวอย่าง</span>}
-        </div>
+          {location.isPlaceholder && <span className="flag-note">ข้อมูลตัวอย่าง</span>}
+        </figure>
 
-        <div className="card__body">
-          <p className="card__country">
-            <span aria-hidden="true">{location.flag}</span> {location.country} · {location.continent}
+        <div className="entry__body">
+          <p className="entry__no mono">
+            สถานที่ {pad2(index)}
+            <span className="entry__country">{location.country}</span>
           </p>
-          <h3 className="card__title">{location.name}</h3>
-          <p className="card__official">{location.officialName}</p>
-          <p className="card__summary">{location.summary}</p>
 
-          <div className="card__tags">
-            <span className="tag tag--rs">RS</span>
-            <span className="tag tag--gnss">GNSS</span>
-            <span className="tag tag--coords mono">{formatCoords(location.coordinates)}</span>
-          </div>
+          <h3 className="entry__title">{location.name}</h3>
+          <p className="entry__official">{location.officialName}</p>
+          <p className="entry__summary">{location.summary}</p>
 
-          <span className="card__more">
-            ดูรายละเอียด
-            <svg viewBox="0 0 20 20" aria-hidden="true">
-              <path d="M4 10h12M11 5l5 5-5 5" />
-            </svg>
-          </span>
+          <dl className="entry__facts">
+            <div>
+              <dt>พิกัด</dt>
+              <dd className="mono">{formatCoords(location.coordinates)}</dd>
+            </div>
+            <div>
+              <dt>ทวีป</dt>
+              <dd>{location.continent}</dd>
+            </div>
+            <div>
+              <dt>ผู้รับผิดชอบ</dt>
+              <dd>{location.owner}</dd>
+            </div>
+          </dl>
+
+          <span className="entry__more">อ่านรายละเอียด →</span>
         </div>
       </button>
     </article>

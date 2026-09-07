@@ -1,49 +1,47 @@
 import { projectInfo } from '../data/team';
 import { NAV_ITEMS } from '../navigation';
-import { LOCATION_COUNT } from '../data/locations';
-import { toThaiDigits } from '../lib/format';
 
+/** ท้ายเล่ม — บันทึกที่มาของข้อมูลและตัวอักษรตามธรรมเนียมหนังสืออ้างอิง */
 export function SiteFooter() {
   return (
-    <footer className="footer">
-      <div className="wrap footer__inner">
-        <div className="footer__brand">
-          <p className="footer__logo">TANIS ATLAS</p>
-          <p className="footer__tagline">
-            {projectInfo.titleTh} · {projectInfo.tagline}
-          </p>
-          <p className="footer__note">
-            เว็บไซต์นำเสนอ {toThaiDigits(LOCATION_COUNT)} สถานที่สำคัญทั่วโลก
-            พร้อมการประยุกต์ใช้ RS และ GNSS ในการศึกษาภูมิศาสตร์
-          </p>
-        </div>
+    <footer className="colophon-foot">
+      <div className="wrap">
+        <hr className="rule" />
+        <div className="colophon-foot__grid">
+          <div>
+            <p className="label label--wide">โครงงาน</p>
+            <p className="colophon-foot__title">แผนที่ภูมิศาสตร์เจ็ดสถานที่ทั่วโลก</p>
+            <p className="colophon-foot__sub">
+              {projectInfo.subject} · {projectInfo.academicYear}
+            </p>
+          </div>
 
-        <div className="footer__col">
-          <h4>เมนู</h4>
-          <ul>
-            {NAV_ITEMS.map((i) => (
-              <li key={i.id}>
-                <a href={`#${i.id}`}>{i.label}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
+          <div>
+            <p className="label label--wide">สารบัญ</p>
+            <ul className="colophon-foot__links">
+              {NAV_ITEMS.map((i) => (
+                <li key={i.id}><a href={`#${i.id}`}>{i.label}</a></li>
+              ))}
+            </ul>
+          </div>
 
-        <div className="footer__col">
-          <h4>ข้อมูลโครงงาน</h4>
-          <dl className="footer__meta">
-            <div><dt>รายวิชา</dt><dd>{projectInfo.subject}</dd></div>
-            <div><dt>ระดับชั้น</dt><dd>{projectInfo.level}</dd></div>
-            <div><dt>โรงเรียน</dt><dd>{projectInfo.school}</dd></div>
-            <div><dt>ครูผู้สอน</dt><dd>{projectInfo.teacher}</dd></div>
-            <div><dt>กำหนดส่ง</dt><dd>{projectInfo.dueDate}</dd></div>
-          </dl>
-        </div>
-      </div>
+          <div>
+            <p className="label label--wide">ที่มาของข้อมูลแผนที่</p>
+            <p className="colophon-foot__note">
+              ขอบเขตประเทศจากชุดข้อมูล Natural Earth มาตราส่วน 1:110,000,000 (สาธารณสมบัติ)
+              แสดงผลด้วยเส้นโครงแผนที่แบบ Natural Earth
+            </p>
+          </div>
 
-      <div className="wrap footer__bar">
-        <p>© {projectInfo.academicYear} · {projectInfo.title}</p>
-        <p className="mono">แผนที่ฐาน: Natural Earth (สาธารณสมบัติ)</p>
+          <div>
+            <p className="label label--wide">ตัวอักษร</p>
+            <p className="colophon-foot__note">
+              Noto Serif Thai · Sarabun · IBM Plex Mono
+              <br />
+              เผยแพร่ภายใต้ SIL Open Font License 1.1
+            </p>
+          </div>
+        </div>
       </div>
     </footer>
   );
