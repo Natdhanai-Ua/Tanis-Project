@@ -12,7 +12,7 @@ export function TeamSection({ onOpen }: Props) {
     <section id="team" className="section">
       <div className="wrap">
         <SectionHead
-          label="ภาคผนวก ข"
+          eyebrow="คณะผู้จัดทำ"
           title="ผู้รับผิดชอบแต่ละสถานที่"
           description="รายชื่อสมาชิกในกลุ่มและขอบเขตความรับผิดชอบในการค้นคว้าและเรียบเรียงข้อมูล"
         />

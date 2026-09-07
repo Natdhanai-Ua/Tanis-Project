@@ -32,7 +32,7 @@ export function TechSection() {
     <section id="technology" className="section">
       <div className="wrap">
         <SectionHead
-          label="ภาคผนวก ก"
+          eyebrow="เทคโนโลยีภูมิสารสนเทศ"
           title="เทคโนโลยีภูมิสารสนเทศที่ใช้ในการศึกษา"
           description="RS ตอบคำถามว่าพื้นที่นั้นมีอะไรอยู่และเปลี่ยนแปลงอย่างไร ส่วน GNSS ตอบคำถามว่าสิ่งนั้นอยู่ ณ ตำแหน่งใดอย่างแม่นยำ ทั้งสองระบบจึงใช้ร่วมกันเสมอในงานภูมิศาสตร์สมัยใหม่"
         />

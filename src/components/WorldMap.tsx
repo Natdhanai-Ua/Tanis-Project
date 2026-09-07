@@ -204,10 +204,10 @@ export function WorldMap({ locations, activeId, hoverId, onHover, onSelect }: Pr
 
   return (
     <figure className="plate">
-      <div className="plate__frame">
+      <div className="mapcard">
         <svg
           ref={svgRef}
-          className="plate__svg"
+          className="mapcard__svg"
           viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
           role="application"
           aria-label="แผนที่โลกแบบอินเทอร์แอกทีฟ แสดงตำแหน่งสถานที่ทั้งเจ็ดแห่ง"
@@ -247,12 +247,15 @@ export function WorldMap({ locations, activeId, hoverId, onHover, onSelect }: Pr
               ))}
             </g>
 
-            <path d={spherePath} className="mp-limb" vectorEffect="non-scaling-stroke" />
 
             <g className="mp-stations">
               {points.map(({ loc, x, y, index }) => {
                 const isActive = activeId === loc.id;
                 const isHover = hoverId === loc.id;
+                /* สองแห่งแรกแสดงป้ายค้างไว้เสมอ เหมือนหมุดคำอธิบายในเทมเพลต */
+                const isFeatured = index <= 2;
+                const showLabel = isActive || isHover || (isFeatured && transform.k === 1);
+                const flip = x > VIEW_W * 0.62;
                 return (
                   <g
                     key={loc.id}
@@ -273,17 +276,41 @@ export function WorldMap({ locations, activeId, hoverId, onHover, onSelect }: Pr
                       }
                     }}
                   >
-                    <circle className="station__hit" r="13" />
-                    <circle className="station__disc" r="7.2" />
-                    <text className="station__num" y="2.5" textAnchor="middle">
+                    {showLabel && (
+                      <line
+                        className="station__leader"
+                        x1={0}
+                        y1={0}
+                        x2={flip ? -19 : 19}
+                        y2={-15}
+                      />
+                    )}
+                    <circle className="station__hit" r="14" />
+                    <circle className="station__ring" r="7.6" />
+                    <text className="station__num" y="2.6" textAnchor="middle">
                       {index}
                     </text>
-                    <g className="station__label">
-                      <rect x="-44" y="-25.5" width="88" height="13" />
-                      <text y="-16" textAnchor="middle">
-                        {loc.name}
-                      </text>
-                    </g>
+                    {showLabel && (
+                      <g
+                        className="station__pill"
+                        transform={`translate(${flip ? -22 : 22} -15)`}
+                      >
+                        <rect
+                          x={flip ? -Math.max(56, loc.name.length * 5.4 + 16) : 0}
+                          y="-10"
+                          width={Math.max(56, loc.name.length * 5.4 + 16)}
+                          height="20"
+                          rx="10"
+                        />
+                        <text
+                          x={flip ? -Math.max(56, loc.name.length * 5.4 + 16) / 2 : Math.max(56, loc.name.length * 5.4 + 16) / 2}
+                          y="3.8"
+                          textAnchor="middle"
+                        >
+                          {loc.name}
+                        </text>
+                      </g>
+                    )}
                   </g>
                 );
               })}
@@ -291,17 +318,17 @@ export function WorldMap({ locations, activeId, hoverId, onHover, onSelect }: Pr
           </g>
         </svg>
 
-        <div className="plate__controls" role="group" aria-label="เครื่องมือควบคุมแผนที่">
+        <div className="mapcard__controls" role="group" aria-label="เครื่องมือควบคุมแผนที่">
           <button type="button" onClick={() => zoomBy(1.35)} aria-label="ขยายแผนที่">
             <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M9 3v12M3 9h12" /></svg>
           </button>
           <button type="button" onClick={() => zoomBy(1 / 1.35)} aria-label="ย่อแผนที่">
             <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h12" /></svg>
           </button>
-          <button type="button" onClick={reset} className="plate__reset">
+          <button type="button" onClick={reset} className="mapcard__reset">
             คืนมาตราส่วนเดิม
           </button>
-          <span className="plate__zoom mono" aria-live="polite">
+          <span className="mapcard__zoom mono" aria-live="polite">
             ×{(transform.k).toFixed(1)}
           </span>
         </div>

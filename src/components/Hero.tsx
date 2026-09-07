@@ -1,76 +1,98 @@
-import { locations, LOCATION_COUNT, COUNTRY_COUNT, CONTINENT_COUNT } from '../data/locations';
-import { projectInfo } from '../data/team';
-import { formatCoords, pad2 } from '../lib/format';
+import { SiteHeader } from './SiteHeader';
+import { WorldMap } from './WorldMap';
+import type { Theme } from '../hooks/useTheme';
+import type { GeoLocation } from '../data/types';
+import { LOCATION_COUNT, COUNTRY_COUNT, CONTINENT_COUNT } from '../data/locations';
 
 interface Props {
-  onOpen: (id: string) => void;
+  theme: Theme;
+  onToggleTheme: () => void;
+  locations: GeoLocation[];
+  activeId: string | null;
+  hoverId: string | null;
+  onHover: (id: string | null) => void;
+  onSelect: (id: string) => void;
 }
 
 /**
- * หน้าปกของโครงงาน — จัดวางตามแบบหน้าชื่อเรื่องและสารบัญของหนังสืออ้างอิง
- * ด้านซ้ายเป็นชื่อเรื่องกับข้อมูลบรรณานุกรม ด้านขวาเป็นสารบัญสถานที่
+ * ส่วนหัวของหน้าแรก
+ *
+ * ลำดับใน DOM สำคัญ: .hero__media ต้องมาก่อน .hero__left แล้วค่อยสลับ
+ * ลำดับการแสดงผลด้วย order เพื่อให้คอลัมน์ซ้ายวาดทับการ์ดแผนที่ได้
+ * โดยไม่ต้องกำหนด z-index — ถ้ากำหนด z-index ให้ .hero__left
+ * มันจะสร้าง stacking context ของตัวเอง แล้วปุ่มแฮมเบอร์เกอร์
+ * จะจมอยู่ใต้แผงเมนู
  */
-export function Hero({ onOpen }: Props) {
+export function Hero({ theme, onToggleTheme, locations, activeId, hoverId, onHover, onSelect }: Props) {
   return (
-    <section id="home" className="title-plate">
-      <div className="wrap title-plate__inner">
-        <div className="title-plate__main">
-          <p className="title-plate__kicker label label--wide">Atlas of Seven Places</p>
+    <section id="home" className="hero">
+      <div className="hero__media anim anim--media" style={{ ['--d' as string]: 0 }}>
+        <WorldMap
+          locations={locations}
+          activeId={activeId}
+          hoverId={hoverId}
+          onHover={onHover}
+          onSelect={onSelect}
+        />
+      </div>
 
-          <h1 className="title-plate__title">
-            แผนที่ภูมิศาสตร์
-            <br />
-            เจ็ดสถานที่ทั่วโลก
+      <div className="hero__left">
+        <SiteHeader theme={theme} onToggleTheme={onToggleTheme} />
+
+        <div className="hero__content">
+          <h1 className="hero__title">
+            <span className="hero__line anim" style={{ ['--d' as string]: 11 }}>
+              สำรวจ<span className="hl">โลก</span>
+            </span>
+            <span className="hero__line anim" style={{ ['--d' as string]: 12 }}>
+              ผ่านสายตาดาวเทียม
+            </span>
           </h1>
 
-          <hr className="rule title-plate__rule" />
-
-          <p className="title-plate__abstract">
-            เอกสารประกอบการศึกษาภูมิศาสตร์กายภาพและภูมิศาสตร์มนุษย์
-            ผ่านกรณีศึกษา {LOCATION_COUNT} แห่งใน {CONTINENT_COUNT} ทวีป
-            แต่ละแห่งอธิบายลักษณะภูมิประเทศและภูมิอากาศ ควบคู่กับการประยุกต์ใช้
-            การสำรวจระยะไกล (Remote Sensing) และระบบดาวเทียมนำทางโลก (GNSS)
-            ในการศึกษาพื้นที่นั้น
+          <p className="hero__text anim" style={{ ['--d' as string]: 13 }}>
+            โครงงานภูมิศาสตร์ที่พาไปสำรวจ {LOCATION_COUNT} สถานที่สำคัญจาก {CONTINENT_COUNT} ทวีปทั่วโลก
+            แต่ละแห่งอธิบายลักษณะภูมิประเทศและภูมิอากาศ ควบคู่กับการใช้การสำรวจระยะไกล
+            และระบบดาวเทียมนำทางโลกในการศึกษาพื้นที่นั้น
           </p>
 
-          <dl className="colophon">
-            <div><dt>รายวิชา</dt><dd>{projectInfo.subject}</dd></div>
-            <div><dt>ระดับชั้น</dt><dd>{projectInfo.level}</dd></div>
-            <div><dt>สถานศึกษา</dt><dd>{projectInfo.school}</dd></div>
-            <div><dt>ครูผู้สอน</dt><dd>{projectInfo.teacher}</dd></div>
-            <div><dt>ปีการศึกษา</dt><dd>{projectInfo.academicYear}</dd></div>
-            <div><dt>กำหนดส่ง</dt><dd>{projectInfo.dueDate}</dd></div>
-          </dl>
-
-          <p className="title-plate__tally">
-            <span>{LOCATION_COUNT} สถานที่</span>
-            <span>{COUNTRY_COUNT} ประเทศ</span>
-            <span>{CONTINENT_COUNT} ทวีป</span>
-          </p>
-
-          <div className="title-plate__actions">
-            <a href="#map" className="btn btn--solid">ไปยังแผนที่โลก</a>
-            <a href="#locations" className="btn btn--line">อ่านรายละเอียดสถานที่</a>
+          <div className="hero__actions">
+            <a className="cta anim" style={{ ['--d' as string]: 14 }} href="#locations">
+              <span className="cta__label">อ่านรายละเอียดสถานที่</span>
+              <span className="cta__icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </span>
+            </a>
           </div>
-        </div>
 
-        <nav className="contents" aria-label="สารบัญสถานที่">
-          <p className="contents__head label label--wide">สารบัญสถานที่</p>
-          <ol className="contents__list">
-            {locations.map((loc, i) => (
-              <li key={loc.id}>
-                <button type="button" className="contents__row" onClick={() => onOpen(loc.id)}>
-                  <span className="contents__no mono">{pad2(i + 1)}</span>
-                  <span className="contents__text">
-                    <span className="contents__name">{loc.name}</span>
-                    <span className="contents__sub">{loc.country} · {loc.continent}</span>
-                  </span>
-                  <span className="contents__coords mono">{formatCoords(loc.coordinates)}</span>
-                </button>
-              </li>
-            ))}
-          </ol>
-        </nav>
+          <dl className="tally anim" style={{ ['--d' as string]: 15 }}>
+            <div>
+              <dt className="mono">{LOCATION_COUNT}</dt>
+              <dd>สถานที่</dd>
+            </div>
+            <div>
+              <dt className="mono">{COUNTRY_COUNT}</dt>
+              <dd>ประเทศ</dd>
+            </div>
+            <div>
+              <dt className="mono">{CONTINENT_COUNT}</dt>
+              <dd>ทวีป</dd>
+            </div>
+            <div>
+              <dt className="mono">RS · GNSS</dt>
+              <dd>เทคโนโลยีภูมิสารสนเทศ</dd>
+            </div>
+          </dl>
+        </div>
       </div>
     </section>
   );

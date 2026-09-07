@@ -44,10 +44,13 @@ if (!cssName) throw new Error('ไม่พบไฟล์ CSS ใน dist/index
 let css = readFileSync(resolve(assets, cssName), 'utf8');
 
 let fontCount = 0;
-css = css.replace(/url\(([^)]*?\.woff2?)\)/g, (whole, rawPath) => {
-  const file = resolve(assets, rawPath.replace(/^["']|["']$/g, '').replace(/^\.?\/?assets\//, ''));
+let cssAssetCount = 0;
+css = css.replace(/url\(([^)]*?\.(?:woff2?|svg|png|jpe?g|webp))\)/g, (whole, rawPath) => {
+  const clean = rawPath.replace(/^["']|["']$/g, '').replace(/^\.?\/?assets\//, '');
+  const file = resolve(assets, clean);
   if (!existsSync(file)) return whole;
-  fontCount++;
+  if (/\.woff2?$/.test(clean)) fontCount++;
+  else cssAssetCount++;
   return `url(${dataUri(file)})`;
 });
 
@@ -87,4 +90,4 @@ writeFileSync(out, html, 'utf8');
 
 const mb = (Buffer.byteLength(html) / 1024 / 1024).toFixed(2);
 console.log(`เขียนไฟล์ dist/tanis-atlas.html เรียบร้อย (${mb} MB)`);
-console.log(`  ฝังฟอนต์ ${fontCount} ไฟล์ · ฝังภาพ ${imageCount} ไฟล์`);
+console.log(`  ฝังฟอนต์ ${fontCount} ไฟล์ · ฝังภาพจาก CSS ${cssAssetCount} ไฟล์ · ฝังภาพสถานที่ ${imageCount} ไฟล์`);

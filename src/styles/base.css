@@ -10,13 +10,13 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: calc(var(--header-h) + 16px);
+  scroll-padding-top: 96px;
   -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
-  background: var(--paper);
+  background: var(--bg);
   color: var(--ink);
   font-family: var(--font-body);
   font-size: var(--fs-body);
@@ -26,29 +26,31 @@ body {
   overflow-x: hidden;
 }
 
-body.is-locked {
+/* ล็อกการเลื่อนหน้าขณะเปิดเมนูหรือแผ่นข้อมูล */
+body.nav-open {
   overflow: hidden;
+}
+
+img,
+video {
+  display: block;
+  max-width: 100%;
 }
 
 h1,
 h2,
 h3,
 h4 {
-  font-family: var(--font-display);
-  font-weight: 600;
-  line-height: var(--lh-tight);
   margin: 0;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -.022em;
   color: var(--ink);
   text-wrap: balance;
 }
 
 p {
   margin: 0;
-}
-
-img {
-  max-width: 100%;
-  display: block;
 }
 
 button {
@@ -72,25 +74,27 @@ ol {
 }
 
 :focus-visible {
-  outline: 2px solid var(--mark);
-  outline-offset: 2px;
+  outline: 2px solid var(--sea);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 ::selection {
-  background: var(--mark);
-  color: var(--paper);
+  background: var(--sea);
+  color: #fff;
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--rule-strong) transparent;
+  scrollbar-color: var(--line-strong) transparent;
 }
 *::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
 }
 *::-webkit-scrollbar-thumb {
-  background: var(--rule-strong);
+  background: var(--line-strong);
+  border-radius: var(--radius-pill);
 }
 *::-webkit-scrollbar-track {
   background: transparent;
@@ -98,13 +102,8 @@ ol {
 
 /* ── ยูทิลิตี้ ─────────────────────────────────────────────── */
 .wrap {
-  width: min(100% - 3rem, var(--wrap));
+  width: min(100% - 2 * var(--pad), var(--wrap));
   margin-inline: auto;
-}
-@media (max-width: 640px) {
-  .wrap {
-    width: min(100% - 2.25rem, var(--wrap));
-  }
 }
 
 .mono {
@@ -112,24 +111,22 @@ ol {
   font-variant-numeric: tabular-nums;
 }
 
-/* ป้ายกำกับตัวเล็ก — ใช้ระยะห่างกว้างเฉพาะกับอักษรละติน/ตัวเลข */
-.label {
-  font-family: var(--font-body);
-  font-size: var(--fs-label);
+/* ป้ายกำกับตัวเล็ก — ใช้ระยะห่างกว้างกับอักษรละตินเท่านั้น
+   ข้อความไทยไม่ควรถูกยืดระยะห่าง เพราะสระและวรรณยุกต์จะหลุดจากพยัญชนะ */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-micro);
   font-weight: 600;
-  color: var(--ink-3);
+  color: var(--sea);
 }
-.label--wide {
-  font-family: var(--font-mono);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-}
-
-/* เส้นคั่นบาง ๆ แบบงานพิมพ์ */
-.rule {
-  border: 0;
-  border-top: var(--hair) solid var(--rule);
-  margin: 0;
+.eyebrow::before {
+  content: '';
+  width: 20px;
+  height: 1.5px;
+  background: currentColor;
+  border-radius: 2px;
 }
 
 .visually-hidden {
@@ -146,18 +143,46 @@ ol {
 
 .skip-link {
   position: absolute;
-  left: var(--sp-4);
+  left: var(--pad);
   top: -100px;
   z-index: 999;
   background: var(--ink);
-  color: var(--paper);
-  padding: 0.6rem 1rem;
+  color: var(--bg);
+  padding: 0.7rem 1.2rem;
+  border-radius: var(--radius-pill);
   font-weight: 600;
   font-size: var(--fs-sm);
-  transition: top var(--t) var(--ease);
+  transition: top var(--t) var(--ease-out);
 }
 .skip-link:focus {
-  top: var(--sp-4);
+  top: var(--pad);
+}
+
+/* ── อนิเมชันตอนเปิดหน้า (ตามเทมเพลต) ─────────────────────── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translate3d(0, 18px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@keyframes media-in {
+  from { opacity: 0; transform: translate3d(28px, 0, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(.72); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.anim {
+  animation: fade-up .82s var(--ease-out) backwards;
+  animation-delay: calc(var(--d, 0) * var(--stagger));
+}
+.anim--media {
+  animation-name: media-in;
+  animation-duration: 1.05s;
+}
+.anim--pop {
+  animation-name: pop-in;
+  animation-duration: .62s;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -167,8 +192,12 @@ ol {
   *,
   *::before,
   *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+    transition-delay: 0s !important;
+  }
+  .anim {
+    animation: none !important;
+    opacity: 1 !important;
   }
 }
