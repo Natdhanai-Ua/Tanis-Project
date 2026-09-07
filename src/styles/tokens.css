@@ -1,0 +1,144 @@
+/* ═══════════════════════════════════════════════════════════════
+   TANIS ATLAS — Design Tokens
+   ธีมหลัก: โหมดมืด (observatory)  |  โหมดสว่าง: สำหรับโปรเจกเตอร์
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── ตัวอักษร ─────────────────────────────────────────────── */
+  --font-display: 'IBM Plex Sans Thai', 'Noto Sans Thai', system-ui, sans-serif;
+  --font-body: 'Sarabun', 'Noto Sans Thai', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  --fs-hero: clamp(2.5rem, 1.4rem + 4.4vw, 4.25rem);
+  --fs-h2: clamp(1.75rem, 1.2rem + 2.2vw, 2.75rem);
+  --fs-h3: clamp(1.25rem, 1.05rem + 0.8vw, 1.6rem);
+  --fs-lead: clamp(1rem, 0.95rem + 0.32vw, 1.175rem);
+  --fs-body: 1.0625rem;
+  --fs-sm: 0.9375rem;
+  --fs-xs: 0.8125rem;
+  --fs-label: 0.75rem;
+
+  --lh-tight: 1.24;
+  --lh-body: 1.8;
+
+  /* ── ระยะห่าง ─────────────────────────────────────────────── */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+  --sp-8: 4.5rem;
+  --sp-9: 7rem;
+
+  --radius-sm: 8px;
+  --radius: 14px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  --wrap: 1280px;
+  --wrap-narrow: 860px;
+  --header-h: 68px;
+
+  /* ── การเคลื่อนไหว ────────────────────────────────────────── */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-fast: 160ms;
+  --t: 280ms;
+  --t-slow: 620ms;
+
+  /* ── สีที่คงที่ทั้งสองโหมด ─────────────────────────────────── */
+  --gold: #e9b44c;
+  --rs: #17b8a2;
+  --gnss: #7c62ee;
+}
+
+/* ── โหมดมืด (ค่าเริ่มต้น) ──────────────────────────────────── */
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --base: #070c18;
+  --base-2: #0a1120;
+  --surface: #0e1628;
+  --surface-2: #131d33;
+  --elevated: #16203a;
+
+  --line: rgba(255, 255, 255, 0.09);
+  --line-strong: rgba(255, 255, 255, 0.16);
+
+  --ink: #eef2f9;
+  --ink-2: #c2cddf;
+  --ink-muted: #8f9db6;
+  --ink-faint: #5d6a83;
+
+  --accent: var(--gold);
+  --accent-ink: #0a0f1c;
+  --accent-soft: rgba(233, 180, 76, 0.14);
+  --accent-line: rgba(233, 180, 76, 0.34);
+
+  --rs-c: #3ed6c0;
+  --rs-soft: rgba(62, 214, 192, 0.12);
+  --rs-line: rgba(62, 214, 192, 0.32);
+
+  --gnss-c: #9b87f5;
+  --gnss-soft: rgba(155, 135, 245, 0.13);
+  --gnss-line: rgba(155, 135, 245, 0.32);
+
+  --map-ocean: #080e1c;
+  --map-land: #17233e;
+  --map-land-hover: #1d2b4a;
+  --map-stroke: rgba(255, 255, 255, 0.11);
+  --map-grat: rgba(255, 255, 255, 0.05);
+
+  --glass: rgba(14, 22, 40, 0.72);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 32px 70px -24px rgba(0, 0, 0, 0.82);
+  --scrim: rgba(3, 6, 13, 0.72);
+}
+
+/* ── โหมดสว่าง ─────────────────────────────────────────────── */
+[data-theme='light'] {
+  color-scheme: light;
+
+  --base: #f6f7fa;
+  --base-2: #eef1f6;
+  --surface: #ffffff;
+  --surface-2: #f4f6fa;
+  --elevated: #ffffff;
+
+  --line: rgba(11, 18, 32, 0.1);
+  --line-strong: rgba(11, 18, 32, 0.18);
+
+  --ink: #0b1220;
+  --ink-2: #2c3648;
+  --ink-muted: #5a6579;
+  --ink-faint: #8a93a3;
+
+  --accent: #a9741d;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(169, 116, 29, 0.1);
+  --accent-line: rgba(169, 116, 29, 0.3);
+
+  --rs-c: #0e8f80;
+  --rs-soft: rgba(14, 143, 128, 0.1);
+  --rs-line: rgba(14, 143, 128, 0.28);
+
+  --gnss-c: #5f4bc4;
+  --gnss-soft: rgba(95, 75, 196, 0.1);
+  --gnss-line: rgba(95, 75, 196, 0.28);
+
+  --map-ocean: #e8edf5;
+  --map-land: #d3dbe8;
+  --map-land-hover: #c4cee0;
+  --map-stroke: rgba(11, 18, 32, 0.16);
+  --map-grat: rgba(11, 18, 32, 0.07);
+
+  --glass: rgba(255, 255, 255, 0.82);
+  --shadow-sm: 0 1px 2px rgba(11, 18, 32, 0.08);
+  --shadow: 0 14px 34px -14px rgba(11, 18, 32, 0.28);
+  --shadow-lg: 0 34px 70px -26px rgba(11, 18, 32, 0.35);
+  --scrim: rgba(20, 28, 44, 0.42);
+}

@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" role="img" aria-label="Placeholder image 01">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#12203c"/>
+      <stop offset="100%" stop-color="#05080f"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="72%" cy="28%" r="60%">
+      <stop offset="0%" stop-color="#e9b44c" stop-opacity=".28"/>
+      <stop offset="100%" stop-color="#e9b44c" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse">
+      <path d="M80 0H0V80" fill="none" stroke="#ffffff" stroke-width="1" opacity=".045"/>
+    </pattern>
+  </defs>
+
+  <rect width="1600" height="1000" fill="url(#g)"/>
+  <rect width="1600" height="1000" fill="url(#grid)"/>
+  <g>
+    <path d="M -40 316.0 L 0 313.8 L 80 331.4 L 160 337.8 L 240 344.7 L 320 346.0 L 400 334.3 L 480 333.0 L 560 321.5 L 640 331.0 L 720 289.5 L 800 294.1 L 880 287.9 L 960 301.0 L 1040 291.0 L 1120 290.8 L 1200 296.2 L 1280 304.0 L 1360 344.7 L 1440 321.0 L 1520 338.8 L 1600 334.5 L 1680 315.1" fill="none" stroke="#e9b44c" stroke-width="1.1" opacity="0.050"/>
+    <path d="M -40 362.0 L 0 355.3 L 80 376.2 L 160 382.8 L 240 389.2 L 320 396.5 L 400 394.0 L 480 380.5 L 560 360.3 L 640 348.8 L 720 363.8 L 800 348.0 L 880 339.1 L 960 345.8 L 1040 339.9 L 1120 362.8 L 1200 345.3 L 1280 387.1 L 1360 375.1 L 1440 396.9 L 1520 392.9 L 1600 382.9 L 1680 381.5" fill="none" stroke="#e9b44c" stroke-width="1.1" opacity="0.068"/>
+    <path d="M -40 408.0 L 0 411.4 L 80 418.9 L 160 424.0 L 240 439.9 L 320 437.8 L 400 437.4 L 480 441.1 L 560 425.4 L 640 419.6 L 720 380.9 L 800 408.6 L 880 374.2 L 960 372.6 L 1040 383.6 L 1120 372.2 L 1200 372.8 L 1280 409.4 L 1360 443.4 L 1440 421.8 L 1520 420.3 L 1600 425.4 L 1680 435.2" fill="none" stroke="#e9b44c" stroke-width="1.1" opacity="0.086"/>
+    <path d="M -40 454.0 L 0 455.6 L 80 472.5 L 160 487.6 L 240 490.6 L 320 492.8 L 400 480.3 L 480 470.5 L 560 466.1 L 640 459.1 L 720 456.6 L 800 416.6 L 880 420.2 L 960 422.3 L 1040 416.1 L 1120 414.9 L 1200 452.7 L 1280 498.2 L 1360 417.7 L 1440 490.8 L 1520 477.2 L 1600 485.4 L 1680 461.2" fill="none" stroke="#e9b44c" stroke-width="1.1" opacity="0.104"/>
+    <path d="M -40 500.0 L 0 503.2 L 80 512.2 L 160 535.2 L 240 536.2 L 320 546.2 L 400 532.4 L 480 534.9 L 560 529.6 L 640 479.1 L 720 504.3 L 800 462.8 L 880 463.2 L 960 454.4 L 1040 463.5 L 1120 456.6 L 1200 496.5 L 1280 463.8 L 1360 546.5 L 1440 503.1 L 1520 550.0 L 1600 551.7 L 1680 545.1" fill="none" stroke="#e9b44c" stroke-width="1.1" opacity="0.122"/>
+    <path d="M -40 546.0 L 0 542.4 L 80 571.2 L 160 580.4 L 240 591.2 L 320 592.3 L 400 590.9 L 480 568.4 L 560 545.3 L 640 549.5 L 720 506.3 L 800 511.1 L 880 500.8 L 960 495.3 L 1040 499.8 L 1120 494.4 L 1200 546.2 L 1280 526.2 L 1360 549.6 L 1440 529.0 L 1520 585.9 L 1600 595.9 L 1680 535.0" fill="none" stroke="#e9b44c" stroke-width="1.1" opacity="0.140"/>
+    <path d="M -40 592.0 L 0 587.5 L 80 611.9 L 160 631.6 L 240 643.6 L 320 645.3 L 400 649.8 L 480 635.7 L 560 627.7 L 640 601.0 L 720 561.2 L 800 541.9 L 880 550.0 L 960 539.8 L 1040 574.1 L 1120 542.9 L 1200 540.6 L 1280 541.9 L 1360 643.1 L 1440 581.4 L 1520 650.0 L 1600 592.4 L 1680 580.5" fill="none" stroke="#e9b44c" stroke-width="1.1" opacity="0.158"/>
+    <path d="M -40 638.0 L 0 642.7 L 80 661.0 L 160 684.1 L 240 699.5 L 320 695.8 L 400 687.3 L 480 697.3 L 560 652.1 L 640 599.5 L 720 637.9 L 800 616.2 L 880 572.4 L 960 588.7 L 1040 573.2 L 1120 630.6 L 1200 640.8 L 1280 580.9 L 1360 700.5 L 1440 704.5 L 1520 622.1 L 1600 682.5 L 1680 653.6" fill="none" stroke="#e9b44c" stroke-width="1.1" opacity="0.176"/>
+    <path d="M -40 684.0 L 0 690.1 L 80 700.6 L 160 724.5 L 240 748.4 L 320 755.1 L 400 748.3 L 480 720.8 L 560 692.6 L 640 708.6 L 720 663.2 L 800 656.4 L 880 620.1 L 960 633.2 L 1040 624.1 L 1120 637.6 L 1200 649.1 L 1280 628.0 L 1360 696.1 L 1440 713.8 L 1520 724.7 L 1600 735.1 L 1680 739.0" fill="none" stroke="#e9b44c" stroke-width="1.1" opacity="0.194"/>
+  </g>
+  <rect width="1600" height="1000" fill="url(#glow)"/>
+
+  <!-- crosshair -->
+  <g stroke="#e9b44c" fill="none" opacity=".55">
+    <circle cx="800" cy="500" r="118" stroke-width="1.2" opacity=".45"/>
+    <circle cx="800" cy="500" r="72" stroke-width="1.6"/>
+    <path d="M800 330V404M800 596V670M630 500H704M896 500H970" stroke-width="1.4"/>
+  </g>
+  <circle cx="800" cy="500" r="9" fill="#e9b44c"/>
+
+  <!-- index -->
+  <text x="96" y="904" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="150" font-weight="500" fill="#e9b44c" opacity=".9">01</text>
+  <text x="96" y="152" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="26" letter-spacing="6" fill="#ffffff" opacity=".5">REPLACE  THIS  IMAGE</text>
+  <text x="96" y="192" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="20" letter-spacing="2" fill="#ffffff" opacity=".3">public / images / placeholder-01.svg</text>
+
+  <rect x="0" y="0" width="1600" height="1000" fill="none" stroke="#e9b44c" stroke-width="2" opacity=".18"/>
+</svg>
